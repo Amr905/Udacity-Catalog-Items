@@ -1,21 +1,18 @@
+import json
 import random
 import string
-from getpass import getuser
 
+import httplib2
 import requests
 from flask import Flask, render_template, request, flash, redirect, url_for, jsonify
+from flask import make_response
 from flask import session as login_session
 from flask_sqlalchemy import SQLAlchemy
+from oauth2client.client import FlowExchangeError
+from oauth2client.client import flow_from_clientsecrets
 from sqlalchemy import asc
 
 from database_setup import *
-import google.oauth2.credentials
-import google_auth_oauthlib.flow
-from oauth2client.client import flow_from_clientsecrets
-from oauth2client.client import FlowExchangeError
-import httplib2
-import json
-from flask import make_response
 
 # import requests
 
@@ -211,7 +208,7 @@ def new_item(category_id_url):
                        user_id=login_session['userid'])
         db.session.add(newItem)
         db.session.commit()
-        flash('New Menu %s Item Successfully Created' % (newItem.name))
+
         return redirect(url_for('items_path', category_id_url=category_id_url, item_id=newItem.id, loggedin=True))
     else:
         return render_template('additem.html', category_id=category_id_url, loggedin=True)
@@ -230,7 +227,7 @@ def editItem(category_id_url, item_id):
 
         db.session.add(editedItem)
         db.session.commit()
-        flash('Menu Item Successfully Edited')
+
         return redirect(url_for('items_path', category_id_url=category_id_url, item_id=editedItem.id, loggedin=True))
     else:
         return render_template('edititem.html', rcategory_id=category_id_url, Item=editedItem, loggedin=True)
