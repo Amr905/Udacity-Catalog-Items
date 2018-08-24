@@ -3,7 +3,7 @@ import string
 from getpass import getuser
 
 import requests
-from flask import Flask, render_template, request, flash, redirect, url_for
+from flask import Flask, render_template, request, flash, redirect, url_for, jsonify
 from flask import session as login_session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import asc
@@ -37,9 +37,8 @@ def index():
     else:
         logged = False
         userid = None
-    return render_template('home.html', Items=items, Categories=categories, loggedin=logged, UserID=userid,HomePage=True)
-
-
+    return render_template('home.html', Items=items, Categories=categories, loggedin=logged, UserID=userid,
+                           HomePage=True)
 
 
 @app.route('/login')
@@ -49,7 +48,7 @@ def login():
     loggedin = False
     if 'username' in login_session:
         loggedin = True
-    return render_template('login.html', STATE=state,loggedin=loggedin)
+    return render_template('login.html', STATE=state, loggedin=loggedin)
 
 
 @app.route('/gconnect', methods=['POST'])
@@ -187,7 +186,8 @@ def category(category_id):
     else:
         logged = False
         userid = None
-    return render_template('home.html', Items=items, Categories=categories, category=category_id, loggedin=logged, UserID=userid)
+    return render_template('home.html', Items=items, Categories=categories, category=category_id, loggedin=logged,
+                           UserID=userid)
 
 
 @app.route('/<int:category_id_url>/<int:item_id>')
@@ -196,7 +196,7 @@ def items_path(category_id_url, item_id):
     categories = db.session.query(Category).order_by(asc(Category.name)).all()
     loggedin = False
     if 'username' in login_session:
-        loggedin=True
+        loggedin = True
 
     return render_template('item.html', Item=item, Categories=categories, loggedin=loggedin)
 
@@ -211,9 +211,9 @@ def new_item(category_id_url):
         db.session.add(newItem)
         db.session.commit()
         flash('New Menu %s Item Successfully Created' % (newItem.name))
-        return redirect(url_for('items_path', category_id_url=category_id_url, item_id=newItem.id,loggedin=True))
+        return redirect(url_for('items_path', category_id_url=category_id_url, item_id=newItem.id, loggedin=True))
     else:
-        return render_template('additem.html', category_id=category_id_url,loggedin=True)
+        return render_template('additem.html', category_id=category_id_url, loggedin=True)
 
 
 @app.route('/<int:category_id_url>/<int:item_id>/edit/', methods=['GET', 'POST'])
@@ -230,27 +230,44 @@ def editItem(category_id_url, item_id):
         db.session.add(editedItem)
         db.session.commit()
         flash('Menu Item Successfully Edited')
-        return redirect(url_for('items_path', category_id_url=category_id_url, item_id=editedItem.id,loggedin=True))
+        return redirect(url_for('items_path', category_id_url=category_id_url, item_id=editedItem.id, loggedin=True))
     else:
-        return render_template('edititem.html', rcategory_id=category_id_url, Item=editedItem,loggedin=True)
+        return render_template('edititem.html', rcategory_id=category_id_url, Item=editedItem, loggedin=True)
 
 
 @app.route('/<int:category_id_url>/<int:item_id>/delete/', methods=['GET', 'POST'])
 def deleteItem(category_id_url, item_id):
     if 'username' not in login_session:
         return redirect('/login')
-    itemToDelete = db.session.query(Item).filter_by(id=item_id,category_id=category_id_url).one()
+    itemToDelete = db.session.query(Item).filter_by(id=item_id, category_id=category_id_url).one()
     if request.method == 'POST':
         db.session.delete(itemToDelete)
         db.session.commit()
         flash(' Item Successfully Deleted')
         return redirect(url_for('index'))
     else:
-        return render_template('deleteitem.html', Item=itemToDelete,loggedin=True)
+        return render_template('deleteitem.html', Item=itemToDelete, loggedin=True)
+
+
+@app.route('/<int:category_id_url>/<int:item_id>/json/', methods=['GET', 'POST'])
+def jsonItem(category_id_url, item_id):
+    item = db.session.query(Item).filter_by(id=item_id, category_id=category_id_url).one()
+    # if request.method == 'POST':
+
+    return jsonify(Item=item.serialize)
+
+
+@app.route('/<int:category_id_url>/json/', methods=['GET', 'POST'])
+def jsoncategory(category_id_url):
+    items = db.session.query(Item).filter_by(category_id=category_id_url).all()
+    # if request.method == 'POST':
+
+    return jsonify(Item=[i.serialize for i in items])
 
 
 if __name__ == '__main__':
     app.run()
+
 
 # User Helper Functions
 
