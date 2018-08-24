@@ -18,7 +18,7 @@
 
     <nav>
         <div class="nav-wrapper  grey darken-4 ">
-            <a href="#" class="brand-logo">Logo</a>
+            <a href={{ url_for('index') }} class="brand-logo">Movie DB</a>
             <ul id="nav-mobile" class="right">
                 {% if loggedin %}
                 <li class="deep-orange accent-4"><a href={{ url_for('gdisconnect') }}">logout</a></li>
