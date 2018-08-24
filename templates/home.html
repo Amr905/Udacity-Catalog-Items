@@ -2,17 +2,30 @@
 <div class="col s4 ">
     <h4 class="grey-text text-darken-4 ">Category</h4>
     <ul>
-        <li><a class="deep-orange-text text-accent-4" href="#">asdasdwq</a></li>
-        <li><a class="deep-orange-text text-accent-4" href="#">asdasdwq</a></li>
+        {%  for category in Categories %}
+        <li><a class="deep-orange-text text-accent-4" href="{{ category.id }}">{{ category.name }}</a></li>
+        {% endfor %}
     </ul>
 
 
 </div>
 <div class="col s7">
+
     <h4 class="grey-text text-darken-4 ">items</h4>
+{% if loggedin and not HomePage %}
+
+    <a href={{url_for('new_item',category_id_url=category)}}>add new item</a>
+    {% endif %}
     <ul>
-        <li><a class="deep-orange-text text-accent-4" href="#">asdasdwq</a></li>
-        <li><a class="deep-orange-text text-accent-4" href="#">asdasdwq</a></li>
+        {% for item in Items %}
+
+        <li><a class="deep-orange-text text-accent-4" href={{  url_for('items_path',category_id_url=item.category_id,item_id=item.id)}}>{{ item.name }}</a> &nbsp;
+        {% if item.user_id == UserID %}
+        <a href={{  url_for('editItem',category_id_url=item.category_id,item_id=item.id)}}>edit</a>
+        <a href={{  url_for('deleteItem',category_id_url=item.category_id,item_id=item.id)}}>delete</a>
+        {% endif %}
+        </li>
+        {% endfor %}
     </ul>
 </div>
 {% endblock %}

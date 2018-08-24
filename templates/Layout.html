@@ -1,16 +1,16 @@
 <!doctype html>
 
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
 
-    <title>The HTML5 Herald</title>
-    <meta name="description" content="The HTML5 Herald">
-    <meta name="author" content="SitePoint">
+    <title>Item catalog website</title>
+
     <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
   -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
-    <link rel="stylesheet" href="css/style.css">
+
 
 </head>
 
@@ -20,7 +20,13 @@
         <div class="nav-wrapper  grey darken-4 ">
             <a href="#" class="brand-logo">Logo</a>
             <ul id="nav-mobile" class="right">
-                <li class="deep-orange accent-4"><a href="# ">Login</a></li>
+                {% if loggedin %}
+                <li class="deep-orange accent-4"><a href={{ url_for('gdisconnect') }}">logout</a></li>
+                {% endif %}
+            {% if not loggedin %}
+            <li class="deep-orange accent-4"><a href={{ url_for('login') }}>Login</a></li>
+            {% endif %}
+
 
             </ul>
         </div>
@@ -33,4 +39,5 @@
     </div>
 
 </body>
+
 </html>

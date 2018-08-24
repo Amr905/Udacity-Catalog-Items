@@ -1,0 +1,16 @@
+{% extends 'Layout.html' %} {% block body %}
+<div class="col s4 ">
+    <h4 class="grey-text text-darken-4 ">Category</h4>
+    <ul>
+        {%  for category in Categories %}
+        <li><a class="deep-orange-text text-accent-4" href="../../{{ category.id }}">{{ category.name }}</a></li>
+        {% endfor %}
+    </ul>
+
+
+</div>
+<div class="col s7">
+    <h4 class="grey-text text-darken-4 ">{{ Item.name }}</h4>
+    <P>{{ Item.description }}</P>
+</div>
+{% endblock %}
