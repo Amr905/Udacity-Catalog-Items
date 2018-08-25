@@ -4,7 +4,8 @@ import string
 
 import httplib2
 import requests
-from flask import Flask, render_template, request, flash, redirect, url_for, jsonify
+from flask import Flask, render_template, \
+    request, flash, redirect, url_for, jsonify
 from flask import make_response
 from flask import session as login_session
 from flask_sqlalchemy import SQLAlchemy
@@ -34,8 +35,9 @@ def index():
     else:
         logged = False
         userid = None
-    return render_template('home.html', Items=items, Categories=categories, loggedin=logged, UserID=userid,
-                           HomePage=True)
+    return render_template('home.html', Items=items,
+                           Categories=categories, loggedin=logged,
+                           UserID=userid,HomePage=True)
 
 
 @app.route('/login')
