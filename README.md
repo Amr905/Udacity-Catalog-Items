@@ -4,7 +4,7 @@
 Create a catalog app where users can add, edit, and delete items and authenticate with google account.
 ## Setup and run the project
 ### Prerequisites
-* Python 3.5
+* Python 3.7
 * Vagrant
 * VirtualBox
 
