@@ -10,7 +10,8 @@
     <meta name="author" content="SitePoint">
     <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
   -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/css/materialize.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js">
     </script>
 
@@ -22,18 +23,28 @@
 
 <nav>
     <div class="nav-wrapper  grey darken-4 ">
-        <a href="#" class="brand-logo">Logo</a>
+        <a href={{ url_for('index') }} class="brand-logo">Movie DB</a>
         <ul id="nav-mobile" class="right">
-            <li class="deep-orange accent-4"><a href="# ">Login</a></li>
-
+            {% if loggedin %}
+                <li class="deep-orange accent-4"><a
+                        href={{ url_for('gdisconnect') }}>logout</a></li>
+            {% endif %}
+            {% if not loggedin %}
+                <li class="deep-orange accent-4"><a href={{ url_for('login') }}>Login</a>
+                </li>
+            {% endif %}
         </ul>
     </div>
 </nav>
 <div class="container grey lighten-5 " style="margin-top: 10px">
     <div class="row">
 
-&nbsp
-        <div id="signinButton" class="center-align">
+        &nbsp
+        {% if loggedin %}
+            You are logged in already
+        {% endif %}
+        {% if not loggedin %}
+            <div id="signinButton" class="center-align">
           <span class="g-signin"
                 data-scope="openid email"
                 data-clientid="348064573950-7arf4kho0e3t5va80p42kv44iajp3eaj.apps.googleusercontent.com"
@@ -44,8 +55,10 @@
                 data-approvalprompt="force">
           </span>
 
-        </div>
-        <div id="result"> &nbsp </div>
+            </div>
+        {% endif %}
+
+        <div id="result"> &nbsp</div>
         <script>
             function signInCallback(authResult) {
                 if (authResult['code']) {
