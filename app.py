@@ -51,7 +51,8 @@ def login():
     loggedin = False
     if 'username' in login_session:
         loggedin = True
-    return render_template('login.html', STATE=state, loggedin=loggedin)
+    return render_template('login.html', STATE=state, loggedin=loggedin,
+                           CLIENT_ID=CLIENT_ID)
 
 
 # function to connect with google authentication
@@ -147,7 +148,8 @@ def gconnect():
 def gdisconnect():
     access_token = login_session.get('access_token')
     if access_token is None:
-        response = make_response(json.dumps('Current user not connected.'), 401)
+        response = make_response(json.dumps('Current user not connected.'),
+                                 401)
         response.headers['Content-Type'] = 'application/json'
         return redirect(url_for('index'))
 
@@ -159,7 +161,7 @@ def gdisconnect():
     print(result)
     if result['status'] == '200':
         del login_session['access_token']
-
+        del login_session['userid']
         del login_session['username']
         del login_session['email']
 
@@ -202,7 +204,7 @@ def category(category_id):
 # display item
 @app.route('/<int:category_id_url>/<int:item_id>')
 def items_path(category_id_url, item_id):
-    item = db.session.query(Item).filter_by(id=item_id).one()
+    item = db.session.query(Item).filter_by(id=item_id).one_or_none()
     categories = db.session.query(Category).order_by(asc(Category.name)).all()
     loggedin = False
     if 'username' in login_session:
@@ -238,8 +240,8 @@ def new_item(category_id_url):
 def editItem(category_id_url, item_id):
     if 'username' not in login_session:
         return redirect('/login')
-    editedItem = db.session.query(Item).filter_by(id=item_id,
-                                                  category_id=category_id_url).one()
+    editedItem = db.session.query(Item).filter_by(
+        id=item_id, category_id=category_id_url).one_or_none()
     if editedItem.user_id != login_session['userid']:
         return redirect('/')
     if request.method == 'POST':
@@ -265,8 +267,8 @@ def editItem(category_id_url, item_id):
 def deleteItem(category_id_url, item_id):
     if 'username' not in login_session:
         return redirect('/login')
-    itemToDelete = db.session.query(Item).filter_by(id=item_id,
-                                                    category_id=category_id_url).one()
+    itemToDelete = db.session.query(Item).filter_by(
+        id=item_id, category_id=category_id_url).one_or_none()
     if itemToDelete.user_id != login_session['userid']:
         return redirect('/')
     if request.method == 'POST':
@@ -284,8 +286,8 @@ def deleteItem(category_id_url, item_id):
 @app.route('/<int:category_id_url>/<int:item_id>/json/',
            methods=['GET', 'POST'])
 def jsonItem(category_id_url, item_id):
-    item = db.session.query(Item).filter_by(id=item_id,
-                                            category_id=category_id_url).one()
+    item = db.session.query(Item).filter_by(
+        id=item_id, category_id=category_id_url).one_or_none()
     # if request.method == 'POST':
 
     return jsonify(Item=item.serialize)
@@ -313,10 +315,6 @@ def login_required(f):
     return decorated_function
 
 
-if __name__ == '__main__':
-    app.run(host='localhost', port=5000)
-
-
 # User Helper Functions
 
 # creates new user
@@ -325,14 +323,19 @@ def createUser(login_session_):
         'email'])
     db.session.add(newUser)
     db.session.commit()
-    user = db.session.query(User).filter_by(email=login_session_['email']).one()
+    user = db.session.query(User).filter_by(
+        email=login_session_['email']).one_or_none()
     return user.id
 
 
 # get user id by mail
 def getUserID(email):
     try:
-        user = db.session.query(User).filter_by(email=email).one()
+        user = db.session.query(User).filter_by(email=email).one_or_none()
         return user.id
     except NoResultFound:
         return None
+
+
+if __name__ == '__main__':
+    app.run(host='localhost', port=5000)
